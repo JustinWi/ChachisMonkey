@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Touch Chachi's Monkey</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes fade {
+            0% {opacity: 0;}
+            50% {opacity: 1;}
+            100% {opacity: 0;}
+        }
+    </style>
+</head>
+<body class="has-background-light" style="height: 100vh; overflow: auto;">
+    <div class="box" style="width: 100%; max-width: 100%; margin: auto;">
+        <h1 class="title has-text-centered">Touch Chachi's Monkey</h1>
+        <input id="playerName" class="input" type="text" placeholder="Enter your name">
+        <button id="startButton" class="button is-primary is-large is-fullwidth" style="margin-top: 20px;">Start Game</button>
+        <button id="newGameButton" class="button is-primary is-large is-fullwidth" style="margin-top: 20px; display: none;">Start New Game</button>
+        <div id="gameArea" style="position: relative; height: 80vh; margin-top: 20px; display: none;">
+            <!-- Image will be inserted here -->
+            <div id="noseText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; animation: fade .5s; display: none;">NOSE</div>
+        </div>
+        <div id="scoreDisplay" class="has-text-centered" style="margin-top: 20px;">
+            <!-- Score will be displayed here -->
+        </div>
+        <div id="timeDisplay" class="has-text-centered" style="margin-top: 20px;">
+            <!-- Time will be displayed here -->
+        </div>
+        <div id="highScoreDisplay" style="display: none; justify-content: center; align-items: center; height: 80vh; flex-direction: column;">
+            <h1 class="title has-text-centered">Congrats, new high score!</h1>
+            <iframe id="highScoreVideo" width="560" height="315" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <canvas id="scoreChart" style="margin-top: 20px;"></canvas>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const gameArea = document.getElementById('gameArea');
+        const startButton = document.getElementById('startButton');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const playerNameInput = document.getElementById('playerName');
+        const scoreChartCanvas = document.getElementById('scoreChart');
+        const newGameButton = document.getElementById('newGameButton');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+        const highScoreVideo = document.getElementById('highScoreVideo');
+        const noseText = document.getElementById('noseText');
+
+        let score = 0;
+        let gameActive = false;
+        let timeLeft = 60;
+        let chart;
+
+        const colors = ['rgb(75, 192, 192)', 'rgb(192, 75, 75)', 'rgb(75, 75, 192)', 'rgb(192, 192, 75)', 'rgb(75, 192, 75)', 'rgb(192, 75, 192)'];
+
+        const monkeyFace = new Image();
+        monkeyFace.src = './img/monkeyface.png';
+        monkeyFace.style.position = 'absolute';
+        monkeyFace.style.width = '100px';
+        monkeyFace.style.height = '100px';
+
+        monkeyFace.addEventListener('click', () => {
+            if (!gameActive) return;
+            score++;
+            scoreDisplay.textContent = `Score: ${score}`;
+            noseText.style.color = colors[Math.floor(Math.random() * colors.length)];
+            noseText.style.display = 'block';
+
+            monkeyFace.hidden = true;
+            setTimeout(() => {noseText.style.display = 'none'; moveImage()}, 450);
+            // moveImage();
+        });
+
+        const videos = [
+            'https://youtu.be/FGBhQbmPwH8?si=AWWbatQpMGYBG__s&t=32',
+            'https://youtu.be/FGBhQbmPwH8?si=AWWbatQpMGYBG__s',
+            'https://youtu.be/FGBhQbmPwH8?si=AWWbatQpMGYBG__s&t=36'
+        ];
+
+        let lastPlayerName = localStorage.getItem('lastPlayerName');
+        if (lastPlayerName) {
+            playerNameInput.value = lastPlayerName;
+        }
+
+        startButton.addEventListener('click', startGame);
+        newGameButton.addEventListener('click', () => location.reload());
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            timeLeft = 60;
+            scoreDisplay.textContent = `Score: ${score}`;
+            timeDisplay.textContent = `Time left: ${timeLeft} seconds`;
+            gameArea.appendChild(monkeyFace);
+            gameArea.style.display = 'block';
+            moveImage();
+            playerNameInput.style.display = 'none';
+            startButton.style.display = 'none';
+            scoreChartCanvas.style.display = 'none';
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = `Time left: ${timeLeft} seconds`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    gameActive = false;
+                    alert(`Game over! Your score is ${score}`);
+                    const playerName = playerNameInput.value;
+                    const date = new Date().toISOString().split('T')[0];
+                    const scoreEntry = {playerName, date, score};
+                    let scores = JSON.parse(localStorage.getItem('scores')) || [];
+                    scores.push(scoreEntry);
+                    localStorage.setItem('scores', JSON.stringify(scores));
+                    updateScoreChart();
+                    let highScore = JSON.parse(localStorage.getItem(playerName)) || 0;
+                    if (score > highScore) {
+                        localStorage.setItem(playerName, JSON.stringify(score));
+                        const video = videos[Math.floor(Math.random() * videos.length)];
+                        highScoreVideo.src = video + '?autoplay=1';
+                        highScoreDisplay.style.display = 'flex';
+                    }
+                    localStorage.setItem('lastPlayerName', playerName);
+                    newGameButton.style.display = 'block';
+                    gameArea.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function moveImage() {
+            const x = Math.random() * (gameArea.offsetWidth - monkeyFace.offsetWidth);
+            const y = Math.random() * (gameArea.offsetHeight - monkeyFace.offsetHeight);
+            monkeyFace.style.left = `${x}px`;
+            monkeyFace.style.top = `${y}px`;
+            monkeyFace.hidden = false;
+        }
+
+        function updateScoreChart() {
+            if (chart) {
+                chart.destroy();
+            }
+            const scores = JSON.parse(localStorage.getItem('scores')) || [];
+            const players = [...new Set(scores.map(scoreEntry => scoreEntry.playerName))];
+            const labels = scores.map(scoreEntry => scoreEntry.date);
+            const datasets = players.map((player, index) => {
+                const playerScores = scores.filter(scoreEntry => scoreEntry.playerName === player);
+                const data = playerScores.map(scoreEntry => scoreEntry.score);
+                return {
+                    label: player,
+                    data: data,
+                    fill: false,
+                    borderColor: colors[index % colors.length],
+                    tension: 0.1
+                };
+            });
+            const ctx = scoreChartCanvas.getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                }
+            });
+        }
+
+        updateScoreChart();
+    });
+    </script>
+</body>
+</html>
