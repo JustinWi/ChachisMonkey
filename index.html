@@ -48,10 +48,11 @@
         const highScoreDisplay = document.getElementById('highScoreDisplay');
         const highScoreVideo = document.getElementById('highScoreVideo');
         const noseText = document.getElementById('noseText');
+        const totalGameTime = 30;
 
         let score = 0;
         let gameActive = false;
-        let timeLeft = 60;
+        let timeLeft = totalGameTime;
         let chart;
 
         const colors = ['rgb(75, 192, 192)', 'rgb(192, 75, 75)', 'rgb(75, 75, 192)', 'rgb(192, 192, 75)', 'rgb(75, 192, 75)', 'rgb(192, 75, 192)'];
@@ -91,7 +92,7 @@
         function startGame() {
             gameActive = true;
             score = 0;
-            timeLeft = 60;
+            timeLeft = totalGameTime;
             scoreDisplay.textContent = `Score: ${score}`;
             timeDisplay.textContent = `Time left: ${timeLeft} seconds`;
             gameArea.appendChild(monkeyFace);
