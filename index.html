@@ -11,6 +11,43 @@
             50% {opacity: 1;} 
             100% {opacity: 0;}
         }
+
+        @keyframes bounceDiagonalRightDown {
+            0% {
+            transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+            transform: translate(100px, 100px) rotate(360deg);
+            }
+        }
+
+        @keyframes bounceDiagonalLeftDown {
+            0% {
+            transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+            transform: translate(-100px, 100px) rotate(360deg);
+            }
+        }
+
+        @keyframes bounceDiagonalRightUp {
+            0% {
+            transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+            transform: translate(100px, -100px) rotate(360deg);
+            }
+        }
+
+        @keyframes bounceDiagonalLeftUp {
+            0% {
+            transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+            transform: translate(-100px, -100px) rotate(360deg);
+            }
+        }
+
     </style>
 </head>
 <body class="has-background-light" style="height: 100vh; overflow: auto;">
@@ -66,6 +103,31 @@
         monkeyFace.style.position = 'absolute';
         monkeyFace.style.width = `${imageWidth}px`;
         monkeyFace.style.height = `${imageHeight}px`;
+        monkeyFace.style.zIndex = 10;
+
+        const lionFace = new Image();
+        lionFace.src = './img/lion.png';
+        lionFace.style.position = 'absolute';
+        lionFace.style.width = `${imageWidth}px`;
+        lionFace.style.height = `${imageHeight}px`;
+        lionFace.style.zIndex = 1;
+        lionFace.hidden = true;
+
+        const hippoFace = new Image();
+        hippoFace.src = './img/hippo.png';
+        hippoFace.style.position = 'absolute';
+        hippoFace.style.width = `${imageWidth}px`;
+        hippoFace.style.height = `${imageHeight}px`;
+        hippoFace.style.zIndex = 1;
+        hippoFace.hidden = true;
+
+        const dogFace = new Image();
+        dogFace.src = './img/puppy.png';
+        dogFace.style.position = 'absolute';
+        dogFace.style.width = `${imageWidth}px`;
+        dogFace.style.height = `${imageHeight}px`;
+        dogFace.style.zIndex = 1;
+        dogFace.hidden = true;
 
         monkeyFace.addEventListener('click', () => {
             if (!gameActive) return;
@@ -79,13 +141,15 @@
             noseText.style.display = 'block';
 
             monkeyFace.hidden = true;
-            setTimeout(() => {noseText.style.display = 'none'; moveImage()}, 450);
+            lionFace.hidden = true;
+            dogFace.hidden = true;
+            hippoFace.hidden = true;
+            setTimeout(() => {noseText.style.display = 'none'; moveImages()}, 450);
         });
 
         const videos = [
             'https://www.youtube.com/embed/-KL8MRcOhUg?si=xEck07kDZyrLXhBr',
-            'https://www.youtube.com/embed/-KL8MRcOhUg?si=xEck07kDZyrLXhBr',
-            'https://www.youtube.com/embed/-KL8MRcOhUg?si=xEck07kDZyrLXhBr'
+            'https://www.youtube.com/embed/ZYkdLvE9IvU?si=7sO2L5Av9-znTRf-'
         ];
 
         let lastPlayerName = localStorage.getItem('lastPlayerName');
@@ -111,8 +175,11 @@
             scoreDisplay.textContent = `Score: ${score}`;
             timeDisplay.textContent = `Time left: ${timeLeft} seconds`;
             gameArea.appendChild(monkeyFace);
+            gameArea.appendChild(lionFace);
+            gameArea.appendChild(hippoFace);
+            gameArea.appendChild(dogFace);
             gameArea.style.display = 'block';
-            moveImage();
+            moveImages();
             playerNameInput.style.display = 'none';
             startButton.style.display = 'none';
             scoreChartCanvas.style.display = 'none';
@@ -138,9 +205,20 @@
                     let highScore = JSON.parse(localStorage.getItem(playerName)) || 0;
                     if (score > highScore) {
                         localStorage.setItem(playerName, JSON.stringify(score));
-                        const video = videos[Math.floor(Math.random() * videos.length)];
+                        // Get the index of the last played video from the local storage
+                        var lastPlayedVideoIndexKey = playerName + '_lastPlayedVideoIndex';
+                        var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
+
+                        // Increment the index
+                        lastPlayedVideoIndex = (lastPlayedVideoIndex + 1) % videos.length;
+
+                        // Play the next video
+                        var video = videos[lastPlayedVideoIndex];
                         highScoreVideo.src = video + '?autoplay=1';
                         highScoreDisplay.style.display = 'flex';
+
+                        // Store the index of the last played video in the local storage
+                        localStorage.setItem(lastPlayedVideoIndexKey, lastPlayedVideoIndex.toString());
                     }
                     localStorage.setItem('lastPlayerName', playerName);
                     newGameButton.style.display = 'block';
@@ -149,12 +227,50 @@
             }, 1000);
         }
 
-        function moveImage() {
-            const x = Math.random() * (gameArea.offsetWidth - imageWidth);
-            const y = Math.random() * (gameArea.offsetHeight - imageHeight);
+        function moveImages() {
+            var x = Math.random() * (gameArea.offsetWidth - imageWidth);
+            var y = Math.random() * (gameArea.offsetHeight - imageHeight);
             monkeyFace.style.left = `${x}px`;
             monkeyFace.style.top = `${y}px`;
             monkeyFace.hidden = false;
+
+            if (score > 2) {
+                x = Math.random() * (gameArea.offsetWidth - imageWidth);
+                y = Math.random() * (gameArea.offsetHeight - imageHeight);
+                lionFace.style.left = `${x}px`;
+                lionFace.style.top = `${y}px`;
+                lionFace.hidden = false;
+            }
+
+            if (score > 5) {
+                x = Math.random() * (gameArea.offsetWidth - imageWidth);
+                y = Math.random() * (gameArea.offsetHeight - imageHeight);
+                hippoFace.style.left = `${x}px`;
+                hippoFace.style.top = `${y}px`;
+                hippoFace.hidden = false;
+            }
+
+            if (score > 8) {
+                x = Math.random() * (gameArea.offsetWidth - imageWidth);
+                y = Math.random() * (gameArea.offsetHeight - imageHeight);
+                dogFace.style.left = `${x}px`;
+                dogFace.style.top = `${y}px`;
+                dogFace.hidden = false;
+            }
+
+            if (score > 11) {
+                setAnimation(monkeyFace);
+                setAnimation(hippoFace);
+                setAnimation(lionFace);
+                setAnimation(dogFace);
+            }
+        }
+
+        function setAnimation(image) {
+            var animations = ['bounceDiagonalRightDown', 'bounceDiagonalLeftDown', 'bounceDiagonalRightUp', 'bounceDiagonalLeftUp'];
+            var animationName = animations[Math.floor(Math.random() * animations.length)];
+            image.style.animation = animationName + ' ' + (Math.random() * 5 + 1) + 's infinite alternate';
+            // image.style.animation = 'rotate ' + (Math.random() * 5 + 1) + 's infinite linear, ' + animationName + ' ' + (Math.random() * 5 + 1) + 's infinite alternate';
         }
 
         function updateScoreChart() {
