@@ -58,7 +58,7 @@
         <button id="newGameButton" class="button is-primary is-large is-fullwidth" style="margin-top: 20px; display: none;">Start New Game</button>
         <div id="gameArea" style="position: relative; height: 80vh; margin-top: 20px; display: none;">
             <!-- Image will be inserted here -->
-            <div id="noseText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; animation: fade .5s; display: none;">NOSE</div>
+            <div id="noseText" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; animation: fade .5s; display: none;">NOSE</div>
         </div>
         <div id="scoreDisplay" class="has-text-centered" style="margin-top: 20px;">
             <!-- Score will be displayed here -->
@@ -95,6 +95,7 @@
         let chart;
 
         const colors = ['rgb(75, 192, 192)', 'rgb(192, 75, 75)', 'rgb(75, 75, 192)', 'rgb(192, 192, 75)', 'rgb(75, 192, 75)', 'rgb(192, 75, 192)'];
+        const bodyParts = ['NOSE', 'LEFT EAR LOBE', 'RIGHT EAR LOBE', 'CHIN', 'BELLY BUTTON', '3RD EYE'];
 
         var success_sounds = ["./audio/yay.m4a","./audio/thatsfast.m4a", "./audio/click.m4a"];
 
@@ -137,6 +138,7 @@
 
             score++;
             scoreDisplay.textContent = `Score: ${score}`;
+            noseText.innerText = bodyParts[Math.floor(Math.random() * bodyParts.length)];
             noseText.style.color = colors[Math.floor(Math.random() * colors.length)];
             noseText.style.display = 'block';
 
@@ -148,8 +150,9 @@
         });
 
         const videos = [
-            'https://www.youtube.com/embed/-KL8MRcOhUg?si=xEck07kDZyrLXhBr',
-            'https://www.youtube.com/embed/ZYkdLvE9IvU?si=7sO2L5Av9-znTRf-'
+            'https://www.youtube.com/embed/gcAQhRK9UlY',
+            'https://www.youtube.com/embed/ZYkdLvE9IvU',
+            'https://www.youtube.com/embed/MbNhdR9PMMI'
         ];
 
         let lastPlayerName = localStorage.getItem('lastPlayerName');
@@ -210,7 +213,7 @@
                         var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
 
                         // Increment the index
-                        lastPlayedVideoIndex = (lastPlayedVideoIndex + 1) % videos.length;
+                        lastPlayedVideoIndex = (lastPlayedVideoIndex) % videos.length;
 
                         // Play the next video
                         var video = videos[lastPlayedVideoIndex];
@@ -218,7 +221,7 @@
                         highScoreDisplay.style.display = 'flex';
 
                         // Store the index of the last played video in the local storage
-                        localStorage.setItem(lastPlayedVideoIndexKey, lastPlayedVideoIndex.toString());
+                        localStorage.setItem(lastPlayedVideoIndexKey, (lastPlayedVideoIndex + 1).toString());
                     }
                     localStorage.setItem('lastPlayerName', playerName);
                     newGameButton.style.display = 'block';
