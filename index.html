@@ -59,6 +59,8 @@
 
         const colors = ['rgb(75, 192, 192)', 'rgb(192, 75, 75)', 'rgb(75, 75, 192)', 'rgb(192, 192, 75)', 'rgb(75, 192, 75)', 'rgb(192, 75, 192)'];
 
+        var success_sounds = ["./audio/yay.m4a","./audio/thatsfast.m4a", "./audio/click.m4a"];
+
         const monkeyFace = new Image();
         monkeyFace.src = './img/monkeyface.png';
         monkeyFace.style.position = 'absolute';
@@ -67,6 +69,10 @@
 
         monkeyFace.addEventListener('click', () => {
             if (!gameActive) return;
+
+            var sound = new Audio(success_sounds[Math.floor(Math.random() * success_sounds.length)]);
+            sound.play();
+
             score++;
             scoreDisplay.textContent = `Score: ${score}`;
             noseText.style.color = colors[Math.floor(Math.random() * colors.length)];
@@ -74,7 +80,6 @@
 
             monkeyFace.hidden = true;
             setTimeout(() => {noseText.style.display = 'none'; moveImage()}, 450);
-            // moveImage();
         });
 
         const videos = [
@@ -90,6 +95,14 @@
 
         startButton.addEventListener('click', startGame);
         newGameButton.addEventListener('click', () => location.reload());
+
+        gameArea.addEventListener('click', function(event) {
+            if (event.target !== monkeyFace) {
+                // This is an unsuccessful touch
+                var sound = new Audio('./audio/sorry.m4a');
+                sound.play();
+            }
+        });
 
         function startGame() {
             gameActive = true;
@@ -108,6 +121,10 @@
                 timeLeft--;
                 timeDisplay.textContent = `Time left: ${timeLeft} seconds`;
                 if (timeLeft <= 0) {
+ 
+                    var sound = new Audio("./audio/welldone.m4a");
+                    sound.play();
+
                     clearInterval(timer);
                     gameActive = false;
                     alert(`Game over! Your score is ${score}`);
