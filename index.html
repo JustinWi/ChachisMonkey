@@ -49,6 +49,8 @@
         const highScoreVideo = document.getElementById('highScoreVideo');
         const noseText = document.getElementById('noseText');
         const totalGameTime = 30;
+        const imageWidth = 100;
+        const imageHeight = 100;
 
         let score = 0;
         let gameActive = false;
@@ -60,8 +62,8 @@
         const monkeyFace = new Image();
         monkeyFace.src = './img/monkeyface.png';
         monkeyFace.style.position = 'absolute';
-        monkeyFace.style.width = '100px';
-        monkeyFace.style.height = '100px';
+        monkeyFace.style.width = `${imageWidth}px`;
+        monkeyFace.style.height = `${imageHeight}px`;
 
         monkeyFace.addEventListener('click', () => {
             if (!gameActive) return;
@@ -131,8 +133,8 @@
         }
 
         function moveImage() {
-            const x = Math.random() * (gameArea.offsetWidth - monkeyFace.offsetWidth);
-            const y = Math.random() * (gameArea.offsetHeight - monkeyFace.offsetHeight);
+            const x = Math.random() * (gameArea.offsetWidth - imageWidth);
+            const y = Math.random() * (gameArea.offsetHeight - imageHeight);
             monkeyFace.style.left = `${x}px`;
             monkeyFace.style.top = `${y}px`;
             monkeyFace.hidden = false;
