@@ -58,7 +58,7 @@
         <button id="newGameButton" class="button is-primary is-large is-fullwidth" style="margin-top: 20px; display: none;">Start New Game</button>
         <div id="gameArea" style="position: relative; height: 80vh; margin-top: 20px; display: none;">
             <!-- Image will be inserted here -->
-            <div id="noseText" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; animation: fade .5s; display: none;">NOSE</div>
+            <div id="noseText" style="text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; animation: fade 1.5s; display: none;">NOSE</div>
         </div>
         <div id="scoreDisplay" class="has-text-centered" style="margin-top: 20px;">
             <!-- Score will be displayed here -->
@@ -67,7 +67,7 @@
             <!-- Time will be displayed here -->
         </div>
         <div id="highScoreDisplay" style="display: none; justify-content: center; align-items: center; height: 80vh; flex-direction: column;">
-            <h1 class="title has-text-centered">Congrats, new high score!</h1>
+            <h1 class="title has-text-centered">Congrats, you scored more than 10!</h1>
             <iframe id="highScoreVideo" width="560" height="315" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
         <canvas id="scoreChart" style="margin-top: 20px;"></canvas>
@@ -146,7 +146,7 @@
             lionFace.hidden = true;
             dogFace.hidden = true;
             hippoFace.hidden = true;
-            setTimeout(() => {noseText.style.display = 'none'; moveImages()}, 450);
+            setTimeout(() => {noseText.style.display = 'none'; moveImages()}, 1450);
         });
 
         const videos = [
@@ -211,22 +211,29 @@
                     localStorage.setItem('scores', JSON.stringify(scores));
                     updateScoreChart();
                     let highScore = JSON.parse(localStorage.getItem(playerName)) || 0;
-                    if (score > highScore) {
-                        localStorage.setItem(playerName, JSON.stringify(score));
-                        // Get the index of the last played video from the local storage
-                        var lastPlayedVideoIndexKey = playerName + '_lastPlayedVideoIndex';
-                        var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
+                    if (score >= 10 || score > highScore) {
 
-                        // Increment the index
-                        lastPlayedVideoIndex = (lastPlayedVideoIndex) % videos.length;
+                        if (score > highScore) {
+                            localStorage.setItem(playerName, JSON.stringify(score));
+                        }
+                        // // Get the index of the last played video from the local storage
+                        // var lastPlayedVideoIndexKey = playerName + '_lastPlayedVideoIndex';
+                        // var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
+
+                        // // Increment the index
+                        // lastPlayedVideoIndex = (lastPlayedVideoIndex) % videos.length;
 
                         // Play the next video
-                        var video = videos[lastPlayedVideoIndex];
+                        // var video = videos[lastPlayedVideoIndex];
+
+                        // Play a random success video
+                        var video = videos[Math.floor(Math.random() * videos.length)];
+
                         highScoreVideo.src = video + '?autoplay=1';
                         highScoreDisplay.style.display = 'flex';
 
                         // Store the index of the last played video in the local storage
-                        localStorage.setItem(lastPlayedVideoIndexKey, (lastPlayedVideoIndex + 1).toString());
+                        // localStorage.setItem(lastPlayedVideoIndexKey, (lastPlayedVideoIndex + 1).toString());
                     }
                     localStorage.setItem('lastPlayerName', playerName);
                     newGameButton.style.display = 'block';
