@@ -219,7 +219,8 @@
                         }
                         // Get the index of the last played video from the local storage
                         var lastPlayedVideoIndexKey = playerName + '_lastPlayedVideoIndexv2';
-                        var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
+                        // Setting default index to 2 so that Chachi doesn't see too many repeats
+                        var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 2;
 
                         // Increment the index
                         lastPlayedVideoIndex = (lastPlayedVideoIndex) % videos.length;
