@@ -217,24 +217,24 @@
                         if (score > highScore) {
                             localStorage.setItem(playerName, JSON.stringify(score));
                         }
-                        // // Get the index of the last played video from the local storage
-                        // var lastPlayedVideoIndexKey = playerName + '_lastPlayedVideoIndex';
-                        // var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
+                        // Get the index of the last played video from the local storage
+                        var lastPlayedVideoIndexKey = playerName + '_lastPlayedVideoIndexv2';
+                        var lastPlayedVideoIndex = parseInt(localStorage.getItem(lastPlayedVideoIndexKey)) || 0;
 
-                        // // Increment the index
-                        // lastPlayedVideoIndex = (lastPlayedVideoIndex) % videos.length;
+                        // Increment the index
+                        lastPlayedVideoIndex = (lastPlayedVideoIndex) % videos.length;
 
                         // Play the next video
-                        // var video = videos[lastPlayedVideoIndex];
+                        var video = videos[lastPlayedVideoIndex];
 
                         // Play a random success video
-                        var video = videos[Math.floor(Math.random() * videos.length)];
+                        // var video = videos[Math.floor(Math.random() * videos.length)];
 
                         highScoreVideo.src = video + '?autoplay=1';
                         highScoreDisplay.style.display = 'flex';
 
                         // Store the index of the last played video in the local storage
-                        // localStorage.setItem(lastPlayedVideoIndexKey, (lastPlayedVideoIndex + 1).toString());
+                        localStorage.setItem(lastPlayedVideoIndexKey, (lastPlayedVideoIndex + 1).toString());
                     }
                     localStorage.setItem('lastPlayerName', playerName);
                     newGameButton.style.display = 'block';
